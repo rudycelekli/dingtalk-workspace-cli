@@ -1,7 +1,7 @@
 import datetime, hashlib, json, os, pathlib, subprocess, xml.etree.ElementTree as ET
 from evaluator import parse, pristine, compare, EXPECTED_NEW
 BASE='59d1da576c6983582d5be11401e7efe07aaaa238'
-HEAD='f966df8bb00d4538b02dca2b46c647d5c4f28990'
+HEAD='49c75adb6f3ec97b72be326fcda6693572b9a4c6'
 root=pathlib.Path.cwd(); proof=root/'proof'; proof.mkdir()
 base=root/'baseline'; fixed=root/'candidate'
 env=dict(os.environ,DWS_PACKAGE_VERSION='0.0.0-test',DWS_NO_UPDATE_CHECK='1',DO_NOT_TRACK='1')
@@ -41,7 +41,7 @@ for directory,sha in [(base,BASE),(fixed,HEAD)]:
  assert command(['git','rev-parse','HEAD'],directory,directory.name+'-head').decode().strip()==sha
  command(['git','diff','--exit-code'],directory,directory.name+'-clean')
 tracked=['.changes/markdown-theme-multiline-metadata.md', 'internal/helpers/markdown_theme.go', 'internal/helpers/markdown_theme_multiline_test.go', 'skills/mono/references/products/markdown.md', 'skills/multi/dingtalk-misc/references/markdown.md']
-hashes={'.changes/markdown-theme-multiline-metadata.md': '87705348f8b2ffea3173358599e2e6103f8885fad0354e11620e2198c83ef057', 'internal/helpers/markdown_theme.go': '4b19223c46c54411f1010aac8d0d037183ddbff80c58e4a221f3b67095b35e88', 'internal/helpers/markdown_theme_multiline_test.go': 'f7db8d30e5448b65135172c4a67654fe785b8a2b75adf6f3d48dc081169f8516', 'skills/mono/references/products/markdown.md': '38e017585830dae22d5533cf2b2ff4e2a7e8ea573ec6d963e38d29f1ce2e1aea', 'skills/multi/dingtalk-misc/references/markdown.md': 'f05340410b3b51135cb6a9b31225ea540721b951a16ee412750e7fd8997f095e'}
+hashes={'.changes/markdown-theme-multiline-metadata.md': '87705348f8b2ffea3173358599e2e6103f8885fad0354e11620e2198c83ef057', 'internal/helpers/markdown_theme.go': '4b19223c46c54411f1010aac8d0d037183ddbff80c58e4a221f3b67095b35e88', 'internal/helpers/markdown_theme_multiline_test.go': '6ee10abc7a2660bd284561fedb5e8a4f57714b8fd5d8970e4246f523c3d6fed3', 'skills/mono/references/products/markdown.md': '38e017585830dae22d5533cf2b2ff4e2a7e8ea573ec6d963e38d29f1ce2e1aea', 'skills/multi/dingtalk-misc/references/markdown.md': 'f05340410b3b51135cb6a9b31225ea540721b951a16ee412750e7fd8997f095e'}
 assert hashes=={p:hashlib.sha256((fixed/p).read_bytes()).hexdigest() for p in tracked}
 assert command(['git','rev-parse','HEAD^'],fixed,'candidate-parent').decode().strip()==BASE
 assert set(command(['git','diff','--name-only',BASE,HEAD],fixed,'changed-paths').decode().splitlines())==set(tracked)

@@ -4,6 +4,7 @@ PACKAGES={PACKAGE_ROOT+'internal/helpers',PACKAGE_ROOT+'test/unit'}
 PREFIX='TestCrossPlatformCoverageMarkdownThemeMultilineMetadata'
 FAIL_NAMES={PREFIX,*[PREFIX+'/'+x for x in ['double-quoted-title','single-quoted-title','real-theme-before','real-theme-after','duplicate-real-keys','owned-literal','owned-folded','owned-multiline-quoted','quoted-crlf']], 'TestCrossPlatformCoverageMarkdownThemeMultilineUploadBytes'}
 PASS_NAMES={PREFIX+'/'+x for x in ['other-literal','other-folded','ordinary-root','malformed-owned-fallback']}
+PASS_NAMES.update({'TestCrossPlatformCoverageMarkdownThemeNonAlignedYAMLFallback','TestCrossPlatformCoverageMarkdownThemeComplexKeysRetained',*['TestCrossPlatformCoverageMarkdownThemeNonAlignedYAMLFallback/'+x for x in ['NEL','LS','PS','CR']]})
 EXPECTED_NEW={(PACKAGE_ROOT+'internal/helpers',x):('fail' if x in FAIL_NAMES else 'pass','') for x in FAIL_NAMES|PASS_NAMES}
 def parse(raw):
  starts=set(); terms={}; package_starts=set(); packages={}; outputs={}
