@@ -1,0 +1,41 @@
+name: Fork table grapheme qualification
+on:
+  push:
+    branches: [qualification/table-graphemes-native]
+permissions:
+  contents: read
+jobs:
+  native:
+    if: github.repository == 'rudycelekli/dingtalk-workspace-cli' && github.event.repository.fork == true && github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: 59d1da576c6983582d5be11401e7efe07aaaa238
+          path: baseline
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: e664fbc2ef6380bc521576dd235369126b6cefc6
+          path: candidate
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version: '1.26.7'
+          cache: false
+      - run: python3 .qualification/table-graphemes/qualify.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          if-no-files-found: error
+          name: table-graphemes-native-proof
+          path: proof
+          retention-days: 1
+          compression-level: 9
