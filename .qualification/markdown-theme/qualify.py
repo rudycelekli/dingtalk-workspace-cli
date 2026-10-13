@@ -52,7 +52,7 @@ packages=['./internal/helpers','./test/unit']
 pattern='^Test.*(Markdown.*Theme|ApplyMarkdownTheme|MarkdownBoundedLine|MonoMultiSkillContent)'
 regressionPath='internal/helpers/markdown_theme_multiline_test.go'
 def suite(directory,label,expected=0,race=False):
- args=['go','test','-json','-count=1','-run',pattern]+(['-race'] if race else [])+packages
+ args=['go','test','-json','-count=1','-covermode=atomic','-coverprofile='+str(proof/(label+'.coverage')),'-run',pattern]+(['-race'] if race else [])+packages
  raw=command(args,directory,label,expected)
  result=parse(raw)
  (proof/(label+'-outcomes.json')).write_text(json.dumps({'tests':[{'package':k[0],'test':k[1],'action':v[0],'skipReason':v[1]} for k,v in sorted(result[0].items())],'packages':result[1]},indent=2))
@@ -63,6 +63,10 @@ negative=suite(base,'baseline-regression',1)
 compare(original,negative)
 positive=suite(fixed,'candidate-regression');raced=suite(fixed,'candidate-race',race=True)
 compare(original,negative,positive);compare(original,negative,raced)
+coverage_env=dict(env,COVERAGE_TARGET='100',COVERAGE_OVERALL_TOLERANCE='0',COVERAGE_ENFORCE_OVERALL='false')
+coverage=command(['./scripts/policy/check-coverage-gate.sh','--base-ref',BASE,'--overall-profile',str(proof/'candidate-regression.coverage'),'--baseline-profile',str(proof/'baseline-original.coverage'),'--diff-profile',str(proof/'candidate-regression.coverage')],fixed,'canonical-coverage-gate',extra=coverage_env)
+assert b'changed code coverage: 100.0000%' in coverage,coverage
+
 # Remove transplanted test before validating the immutable baseline CLI.
 (base/regressionPath).unlink()
 for directory in [base,fixed]:
